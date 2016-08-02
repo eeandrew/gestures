@@ -18,6 +18,7 @@ export default class ImgTest extends Component {
     this.pinch = 1;
     this.left = 0;
     this.top = 0;
+    this.angle = 0;
     this.onPinch = this.onPinch.bind(this);
     this.onRotate = this.onRotate.bind(this);
     this.onMove = this.onMove.bind(this);
@@ -31,8 +32,9 @@ export default class ImgTest extends Component {
   }
 
   onRotate(event) {
+    this.angle += event.angle
     this.setState({
-      angle:event.angle
+      angle:this.angle
     });
   }
 
@@ -50,16 +52,16 @@ export default class ImgTest extends Component {
       pinch,
       angle,
       left,
-      top
+      top,
     } = this.state;
     let imgStyle = {
-      transform: `scale(${pinch})`,
+      transform: `scale(${pinch}) rotateZ(${angle}deg)`,
       left: `${left}px`,
       top: `${top}px`
     }
     return (
     <div>
-      <Gestures onPinch={this.onPinch} onMove={this.onMove}>
+      <Gestures onPinch={this.onPinch} onMove={this.onMove} onRotate={this.onRotate}>
         <div className="wrapper" >
           <img  className="lena" style={imgStyle} src="http://read.pudn.com/downloads94/sourcecode/graph/texture_mapping/374111/shuzituxiang/len_std.jpg"></img>
         </div>

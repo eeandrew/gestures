@@ -5,8 +5,7 @@ import ImgTest from './ImgTest';
 const App = (props) => {
   return (
     <div>
-    <ImgTest/>
-    <ImgTest/>
+      <ImgTest/>
     </div>
   );
 }

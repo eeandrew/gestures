@@ -23,7 +23,7 @@ export default class Gestures extends Component {
     return new Date().getTime(); 
   }
   _getDistance(xLen,yLen) {
-    return Math.sqrt(xLen * xLen,yLen * yLen);
+    return Math.sqrt(xLen * xLen + yLen * yLen);
   }
   /**
    * 获取向量的旋转方向
@@ -34,8 +34,8 @@ export default class Gestures extends Component {
   _getRotateAngle(vector1,vector2) {
     let direction = this._getRotateDirection(vector1,vector2);
     direction = direction > 0 ? -1 : 1;
-    let len1 = this._getDistance(vector1);
-    let len2 = this._getDistance(vector2);
+    let len1 = this._getDistance(vector1.x,vector1.y);
+    let len2 = this._getDistance(vector2.x,vector2.y);
     let mr = len1 * len2;
     if(mr === 0) return 0;
     let dot = vector1.x * vector2.x + vector1.y * vector2.y;
@@ -88,7 +88,7 @@ export default class Gestures extends Component {
       if(this.touchVector) {
         let vector = {
           x: e.touches[1].pageX - e.touches[0].pageX,
-          y: e.touches[1].pageY - e.touches[1].pageY
+          y: e.touches[1].pageY - e.touches[0].pageY
         };
         let angle = this._getRotateAngle(vector,this.touchVector);
         this._emitEvent('onRotate',{
