@@ -191,12 +191,40 @@
 	// shim for using process in browser
 
 	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	(function () {
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
+	    }
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
+	    }
+	  }
+	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
 
 	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);
@@ -212,7 +240,7 @@
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 
 	    var len = queue.length;
@@ -229,7 +257,7 @@
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 
 	process.nextTick = function (fun) {
@@ -241,7 +269,7 @@
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 
@@ -7931,6 +7959,10 @@
 	  }
 	};
 
+	function registerNullComponentID() {
+	  ReactEmptyComponentRegistry.registerNullComponentID(this._rootNodeID);
+	}
+
 	var ReactEmptyComponent = function (instantiate) {
 	  this._currentElement = null;
 	  this._rootNodeID = null;
@@ -7939,7 +7971,7 @@
 	assign(ReactEmptyComponent.prototype, {
 	  construct: function (element) {},
 	  mountComponent: function (rootID, transaction, context) {
-	    ReactEmptyComponentRegistry.registerNullComponentID(rootID);
+	    transaction.getReactMountReady().enqueue(registerNullComponentID, this);
 	    this._rootNodeID = rootID;
 	    return ReactReconciler.mountComponent(this._renderedComponent, rootID, transaction, context);
 	  },
@@ -18662,7 +18694,7 @@
 
 	'use strict';
 
-	module.exports = '0.14.7';
+	module.exports = '0.14.8';
 
 /***/ },
 /* 147 */
@@ -19714,22 +19746,52 @@
 	  function ImgTest(props) {
 	    _classCallCheck(this, ImgTest);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(ImgTest).call(this, props));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ImgTest).call(this, props));
+
+	    _this.state = {
+	      pinch: 1
+	    };
+	    return _this;
 	  }
 
 	  _createClass(ImgTest, [{
 	    key: 'onPinch',
-	    value: function onPinch(event) {}
+	    value: function onPinch(event) {
+	      console.log('onPinch');
+	      alert('onPinch');
+	      this.setState({
+	        pinch: event.scale
+	      });
+	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        _Gestures2.default,
+	        'div',
 	        null,
 	        _react2.default.createElement(
+	          _Gestures2.default,
+	          null,
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'wrapper', onPinch: this.onPinch },
+	            _react2.default.createElement('img', { className: 'lena', src: 'http://read.pudn.com/downloads94/sourcecode/graph/texture_mapping/374111/shuzituxiang/len_std.jpg' })
+	          )
+	        ),
+	        _react2.default.createElement(
 	          'div',
-	          { className: 'wrapper', onPinch: this.onPinch },
-	          _react2.default.createElement('img', { className: 'lena', src: 'http://read.pudn.com/downloads94/sourcecode/graph/texture_mapping/374111/shuzituxiang/len_std.jpg' })
+	          null,
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Pinch'
+	          ),
+	          ' ',
+	          _react2.default.createElement(
+	            'span',
+	            null,
+	            this.state.pinch
+	          )
 	        )
 	      );
 	    }
@@ -19949,8 +20011,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/less-loader/index.js!./ImgTest.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/less-loader/index.js!./ImgTest.css");
+			module.hot.accept("!!./../node_modules/.npminstall/css-loader/0.23.1/css-loader/index.js!./../node_modules/.npminstall/less-loader/2.2.3/less-loader/index.js!./ImgTest.css", function() {
+				var newContent = require("!!./../node_modules/.npminstall/css-loader/0.23.1/css-loader/index.js!./../node_modules/.npminstall/less-loader/2.2.3/less-loader/index.js!./ImgTest.css");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -20246,7 +20308,6 @@
 	function applyToTag(styleElement, obj) {
 		var css = obj.css;
 		var media = obj.media;
-		var sourceMap = obj.sourceMap;
 
 		if(media) {
 			styleElement.setAttribute("media", media)
@@ -20264,7 +20325,6 @@
 
 	function updateLink(linkElement, obj) {
 		var css = obj.css;
-		var media = obj.media;
 		var sourceMap = obj.sourceMap;
 
 		if(sourceMap) {

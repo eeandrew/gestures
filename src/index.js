@@ -6,6 +6,7 @@ const App = (props) => {
   return (
     <div>
     <ImgTest/>
+    <ImgTest/>
     </div>
   );
 }

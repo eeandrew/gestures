@@ -12,6 +12,7 @@ export default class Gestures extends Component {
     this._onTouchEnd = this._onTouchEnd.bind(this);
     this._emitEvent = this._emitEvent.bind(this);
     this.startX = this.startY = this.moveX = this.moveY = null;
+    this.previousPinchScale = 1;
   }
   _emitEvent(eventType,e) {
     let eventHandler = this.props[eventType];
@@ -81,7 +82,8 @@ export default class Gestures extends Component {
       let touchDistance = this._getDistance(xLen,yLen);
       if(this.touchDistance) {
         let pinchScale = touchDistance / this.touchDistance;
-        this._emitEvent('onPinch',{scale:pinchScale});
+          this._emitEvent('onPinch',{scale:pinchScale - this.previousPinchScale});
+          this.previousPinchScale = pinchScale;
       }
       if(this.touchVector) {
         let vector = {
@@ -127,6 +129,7 @@ export default class Gestures extends Component {
       this._emitEvent('onLongPress');
     }
     this.startX = this.startY = this.moveX = this.moveY = null;
+    this.previousPinchScale = 1;
   }
   render() {
    return React.cloneElement(React.Children.only(this.props.children), {
