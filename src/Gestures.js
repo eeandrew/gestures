@@ -13,11 +13,12 @@ export default class Gestures extends Component {
     this._emitEvent = this._emitEvent.bind(this);
     this.startX = this.startY = this.moveX = this.moveY = null;
     this.previousPinchScale = 1;
+    this.longTapTimeout = null;
   }
   _emitEvent(eventType,e) {
     let eventHandler = this.props[eventType];
     if(!eventHandler)return;
-    eventHandler.call(this,e);
+    eventHandler(e);
   }
   _getTime() {
     return new Date().getTime(); 
@@ -49,7 +50,7 @@ export default class Gestures extends Component {
     let point = e.touches ? e.touches[0] : e;
     this.startX = point.pageX;
     this.startY = point.pageY;
-    this.startTime = this._getTime();
+    window.clearTimeout(this.longTapTimeout);
     //两点接触
     if(e.touches.length > 1) {
       let point2 = e.touches[1];
@@ -61,6 +62,10 @@ export default class Gestures extends Component {
         y: point2.pageY - this.startY
       };
     }else {
+      this.startTime = this._getTime();
+      this.longTapTimeout = setTimeout(()=>{
+        this._emitEvent('onLongPress');
+      },800);
       if(this.previousTouchPoint) {
         if( Math.abs(this.startX -this.previousTouchPoint.startX) < 10  &&
           Math.abs(this.startY - this.previousTouchPoint.startY) < 10 && 
@@ -99,6 +104,7 @@ export default class Gestures extends Component {
         this.touchVector.y = vector.y;
       }
     }else {
+      window.clearTimeout(this.longTapTimeout);
       let point = e.touches ? e.touches[0] :e;
       let deltaX = this.moveX === null ? 0 : point.pageX - this.moveX;
       let deltaY = this.moveY === null ? 0 : point.pageY - this.moveY;
@@ -118,18 +124,19 @@ export default class Gestures extends Component {
     /**
      * 在X轴或Y轴发生过移动
      */
+    window.clearTimeout(this.longTapTimeout);
     let timestamp = this._getTime();
     if(this.moveX !== null && Math.abs(this.moveX - this.startX) > 10 ||
     this.moveY !== null && Math.abs(this.moveY - this.startY) > 10) {
       if(timestamp - this.startTime < 500) {
         this._emitEvent('onSwipe');
       } 
-    }else if(timestamp - this.startTime <1000){
+    }else if(timestamp - this.startTime <2000){
       if(timestamp - this.startTime < 500) {
         this._emitEvent('onTap');
       }
       if(timestamp - this.startTime > 500) {
-        this._emitEvent('onLongPress');
+       // this._emitEvent('onLongPress');
       }
     }
     this.startX = this.startY = this.moveX = this.moveY = null;

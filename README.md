@@ -1,8 +1,16 @@
-# ReactPicker
+# HTML5手势检测，基于React
 
-## 一个picker控件，这里展示一个基于Picker的DatePicker
-![image](https://github.com/eeandrew/ReadmeResource/blob/master/img/react-picker/react-picker-demo.gif)
+## 检测类型
+1. tap
+2. double tap
+3. long tap
+4. move
+5. swipe
+6. pinch(zoom)
+7. rotate
+ 
+![image](https://github.com/eeandrew/ReadmeResource/blob/master/img/gestures/gestures.gif)
 
-##[DEMO](http://eeandrew.github.io/demos/reactpicker/index.html)
+##[DEMO](http://eeandrew.github.io/demos/gestures/index.htmll)
 
 

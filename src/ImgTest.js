@@ -68,6 +68,7 @@ export default class ImgTest extends Component {
   }
 
   onLongPress() {
+    alert('Long Press');
     this.setState({
       animating:true
     });
