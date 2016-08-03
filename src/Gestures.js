@@ -60,19 +60,20 @@ export default class Gestures extends Component {
         x: point2.pageX - this.startX,
         y: point2.pageY - this.startY
       };
+    }else {
+      if(this.previousTouchPoint) {
+        if( Math.abs(this.startX -this.previousTouchPoint.startX) < 10  &&
+          Math.abs(this.startY - this.previousTouchPoint.startY) < 10 && 
+          Math.abs(this.startTime - this.previousTouchTime) < 300) {
+            this._emitEvent('onDoubleTap');
+          }
+      }
+      this.previousTouchTime = this.startTime;
+      this.previousTouchPoint = {
+        startX : this.startX,
+        startY : this.startY
+      };
     }
-    if(this.previousTouchPoint) {
-      if( Math.abs(this.startX -this.previousTouchPoint.startX) < 10  &&
-        Math.abs(this.startY - this.previousTouchPoint.startY) < 10 && 
-        Math.abs(this.startTime - this.previousTouchTime) < 300) {
-          this._emitEvent('onDoubleTap');
-        }
-    }
-    this.previousTouchTime = this.startTime;
-    this.previousTouchPoint = {
-      startX : this.startX,
-      startY : this.startY
-    };
   }
   _onTouchMove(e) {
     let timestamp = this._getTime();
