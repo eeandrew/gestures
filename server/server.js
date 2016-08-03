@@ -42,7 +42,7 @@ new WebpackDevServer(webpack(config), {
   hot: true,
   noInfo: true,
   historyApiFallback: true
-}).listen(9090, '192.168.1.9', (err, result) => {
+}).listen(9090, '172.16.40.181', (err, result) => {
   if (err) {
     console.log(err);
   }

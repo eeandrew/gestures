@@ -3,11 +3,52 @@
     background: #ccc;
     text-align: center;
     display: flex;
+    display: -webkit-flex;
     align-items: center;
+    -webkit-align-items:center;
     justify-content: center;
+    -webkit-justify-content:center;
     overflow: hidden;
+}
+
+@-webkit-keyframes flash {
+  from, 50%, to {
+    opacity: 1;
+  }
+
+  25%, 75% {
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  from, 50%, to {
+    opacity: 1;
+  }
+
+  25%, 75% {
+    opacity: 0;
+  }
+}
+
+.flash {
+  -webkit-animation-name: flash;
+  animation-name: flash;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
 }
 
 .lena {
     position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.mask {
+    width: 200px;
 }

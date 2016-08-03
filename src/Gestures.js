@@ -124,9 +124,12 @@ export default class Gestures extends Component {
         this._emitEvent('onSwipe');
       } 
     }else if(timestamp - this.startTime <1000){
-      this._emitEvent('onTap');
-    }else if(timestamp - this.startTime > 1000){
-      this._emitEvent('onLongPress');
+      if(timestamp - this.startTime < 500) {
+        this._emitEvent('onTap');
+      }
+      if(timestamp - this.startTime > 500) {
+        this._emitEvent('onLongPress');
+      }
     }
     this.startX = this.startY = this.moveX = this.moveY = null;
     this.previousPinchScale = 1;
