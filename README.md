@@ -11,6 +11,6 @@
  
 ![image](https://github.com/eeandrew/ReadmeResource/blob/master/img/gestures/gestures.gif)
 
-##[DEMO](http://eeandrew.github.io/demos/gestures/index.htmll)
+##[DEMO](http://eeandrew.github.io/demos/gestures/index.html)
 
 
